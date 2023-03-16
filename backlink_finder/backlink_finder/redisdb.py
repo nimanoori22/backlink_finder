@@ -7,7 +7,7 @@ class RedisDB:
         self.port = port
         self.db = db
         self.r = redis.StrictRedis(host=self.host, port=self.port, db=self.db)
-
+    
     def get(self, key):
         return self.r.get(key)
 
@@ -34,3 +34,9 @@ class RedisDB:
     
     def get_from_hash(self, hash_name, field):
         return self.r.hget(hash_name, field)
+    
+    def get_all_from_hash(self, hash_name):
+        return self.r.hgetall(hash_name)
+    
+    def get_keys_from_hash(self, hash_name):
+        return self.r.hkeys(hash_name)
