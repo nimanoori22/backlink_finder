@@ -4,14 +4,18 @@ from scrapy.spiders import CrawlSpider, Rule
 from ..items import BacklinkFinderItem
 from ..redisdb import RedisDB
 import json
+from urllib.parse import urlparse
 
 class WebSpider(CrawlSpider):
     name = 'web_spider'
-    start_urls = ['https://www.varzesh3.com/news/1871643/%D8%A7%D9%85%D8%B3%D8%A7%D9%84-%D9%86%D8%A7%D9%BE%D9%88%D9%84%DB%8C-%D8%AF%D8%B1-%DA%86%D9%85%D9%BE%DB%8C%D9%88%D9%86%D8%B2%D9%84%DB%8C%DA%AF-%D8%B7%D9%84%D8%B3%D9%85-%D8%B4%DA%A9%D9%86%DB%8C-%D9%85%DB%8C-%DA%A9%D9%86%D8%AF']
-    deny_list = json.loads(RedisDB('localhost', 6379, 0).get('top_websites'))
+    start_urls = ['https://www.wikipedia.org/']
+    try:
+        deny_list = json.loads(RedisDB('localhost', 6379, 0).get('top_websites'))
+    except TypeError:
+        deny_list = []
     rules = (
         Rule(
-        LinkExtractor(deny_domains=(deny_list)), 
+        LinkExtractor(allow=()),
         callback='parse', 
         follow=True,
         ),
@@ -24,9 +28,9 @@ class WebSpider(CrawlSpider):
 
 
     def parse(self, response):
-        domain = response.url.split('/')[2]
+        url = urlparse(response.url)
+        domain = f'{url.scheme}://{url.netloc}'
         external_links = LinkExtractor(allow=(), deny=domain).extract_links(response)
-        # external_links = [link for link in links if domain not in link.url]
         status = response.status
         page = response.url
 
@@ -42,8 +46,6 @@ class WebSpider(CrawlSpider):
                 nofollow=link.nofollow,
                 keyword=link.text
             )
-        
-        # return response.follow_all(links, self.parse)
 
 
 class TopWebsites(scrapy.Spider):
@@ -55,6 +57,8 @@ class TopWebsites(scrapy.Spider):
 
     def parse(self, response):
         top_websites = response.css('td:nth-child(1) a::text').getall()
+        if 'wikipedia.org' in top_websites:
+            top_websites.remove('wikipedia.org')
         
         if not self.redis.exists('top_websites'):
             self.redis.set('top_websites', json.dumps(top_websites))

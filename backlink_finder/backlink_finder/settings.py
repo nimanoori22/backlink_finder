@@ -6,6 +6,10 @@
 #     https://docs.scrapy.org/en/latest/topics/settings.html
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+import os
+import sys
+import django
+import json
 
 BOT_NAME = "backlink_finder"
 
@@ -14,7 +18,7 @@ NEWSPIDER_MODULE = "backlink_finder.spiders"
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-USER_AGENT = "backlink_finder (+http://www.learnster.ir)"
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36"
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
@@ -103,3 +107,14 @@ ITEM_PIPELINES = {
 REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
+
+
+# get path from /etc/config.json
+with open('/etc/config.json') as config_file:
+      config = json.load(config_file)
+
+# get path from /etc/config.json
+sys.path.insert(0, config['khiar_django_path'])
+# print(type(config['khiar_django_path']), '-'*50)
+os.environ['DJANGO_SETTINGS_MODULE'] = 'khiar.settings'
+django.setup()

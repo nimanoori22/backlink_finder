@@ -8,18 +8,21 @@
 from itemadapter import ItemAdapter
 from .redisdb import RedisDB
 import json
+from urllib.parse import urlparse
+from backlinks.models import Site, Link
 
 class BacklinkFinderPipeline:
 
     def __init__(self):
         self.redis = RedisDB('localhost', 6379, 0)
+        self.items = []
 
     def process_item(self, item, spider):
         if not self.redis.exists_in_hash('sites', item['domain']):
             self.redis.set_to_hash('sites', item['domain'], '[]')
 
         link = item['link']
-        link_domain = link.split('/')[2]
+        link_domain = f'{urlparse(link).scheme}://{urlparse(link).netloc}'
         if not self.redis.exists_in_hash('sites', link_domain):
             self.redis.set_to_hash('sites', link_domain, '[]')
         

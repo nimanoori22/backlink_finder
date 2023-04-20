@@ -1,8 +1,12 @@
+asgiref==3.6.0
 asttokens==2.2.1
 async-timeout==4.0.2
 attrs==22.2.0
 Automat==22.10.0
 backcall==0.2.0
+backports.zoneinfo==0.2.1
+beautifulsoup4==4.12.0
+bs4==0.0.1
 certifi==2022.12.7
 cffi==1.15.1
 charset-normalizer==3.0.1
@@ -12,6 +16,7 @@ cryptography==39.0.1
 cssselect==1.2.0
 debugpy==1.6.6
 decorator==5.1.1
+Django==4.2
 dnspython==2.3.0
 executing==1.2.0
 filelock==3.9.0
@@ -57,6 +62,8 @@ requests-file==1.5.1
 Scrapy==2.8.0
 service-identity==21.1.0
 six==1.16.0
+soupsieve==2.4
+sqlparse==0.4.4
 stack-data==0.6.2
 tldextract==3.4.0
 tornado==6.2
